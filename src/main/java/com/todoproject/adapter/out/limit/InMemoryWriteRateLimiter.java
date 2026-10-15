@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  * would need justification under the constitution's dependency rule.
  */
 @Component
-class InMemoryWriteRateLimiter implements WriteRateLimiterPort {
+public class InMemoryWriteRateLimiter implements WriteRateLimiterPort {
 
     private static final Duration WINDOW = Duration.ofMinutes(1);
 

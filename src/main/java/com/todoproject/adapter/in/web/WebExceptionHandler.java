@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * (FR-024, security CHK027, CHK028) -- each branch renders one fixed, pre-written sentence.
  */
 @ControllerAdvice(basePackages = "com.todoproject.adapter.in.web")
-class WebExceptionHandler {
+public class WebExceptionHandler {
 
     private final ViewBoardQuery viewBoardQuery;
 

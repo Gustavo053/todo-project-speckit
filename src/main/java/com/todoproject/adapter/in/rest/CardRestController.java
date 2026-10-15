@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * this surface is stateless and cookie-less (research R6, SecurityConfig). */
 @RestController
 @RequestMapping("/api/cards")
-class CardRestController {
+public class CardRestController {
 
     private final ViewCardQuery viewCardQuery;
     private final CreateCardUseCase createCardUseCase;

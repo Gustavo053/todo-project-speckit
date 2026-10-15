@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /** Serves the board itself (FR-001, FR-003, FR-004). */
 @Controller
-class BoardController {
+public class BoardController {
 
     private final ViewBoardQuery viewBoardQuery;
 

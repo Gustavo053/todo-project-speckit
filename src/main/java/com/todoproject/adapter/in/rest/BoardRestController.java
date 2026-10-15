@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 /** Read-only endpoints over the board (contracts/rest-api.yaml). */
 @RestController
 @RequestMapping("/api")
-class BoardRestController {
+public class BoardRestController {
 
     private final ViewBoardQuery viewBoardQuery;
 

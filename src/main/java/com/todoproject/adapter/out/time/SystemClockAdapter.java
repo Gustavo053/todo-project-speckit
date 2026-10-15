@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 /** The real clock. Tests substitute a fixed one through the port. */
 @Component
-class SystemClockAdapter implements ClockPort {
+public class SystemClockAdapter implements ClockPort {
 
     private final Clock clock = Clock.systemUTC();
 

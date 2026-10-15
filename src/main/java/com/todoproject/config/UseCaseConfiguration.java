@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * container, and confines the framework to {@code config}.
  */
 @Configuration
-class UseCaseConfiguration {
+public class UseCaseConfiguration {
 
     @Bean
     WriteGuard writeGuard(WriteRateLimiterPort rateLimiter) {

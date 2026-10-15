@@ -6,7 +6,7 @@ package com.todoproject.adapter.in.rest;
  * <p>An adapter-level concern, not a domain one -- the domain only knows about a revision number
  * once it has one; the HTTP precondition mechanics belong here (contracts/rest-api.yaml).
  */
-class IfMatchRequiredException extends RuntimeException {
+public class IfMatchRequiredException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

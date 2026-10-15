@@ -14,7 +14,7 @@ import org.springframework.http.ResponseCookie;
  * why it needs no consent prompt (research R10, security CHK022). {@code HttpOnly} because nothing
  * reads it in the browser — the server renders the theme.
  */
-final class ThemeCookie {
+public final class ThemeCookie {
 
     static final String NAME = "appearance";
 

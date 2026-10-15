@@ -27,7 +27,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+public class SecurityConfig {
 
     private static final RequestMatcher API = new AntPathRequestMatcher("/api/**");
 

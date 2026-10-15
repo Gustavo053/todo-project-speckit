@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * the originating form with status 422 and the typed input intact on rejection.
  */
 @Controller
-class CardController {
+public class CardController {
 
     private final ViewCardQuery viewCardQuery;
     private final CreateCardUseCase createCardUseCase;

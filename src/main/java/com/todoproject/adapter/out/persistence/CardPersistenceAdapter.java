@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * refused instead of overwritten (research R14).
  */
 @Repository
-class CardPersistenceAdapter implements CardRepository {
+public class CardPersistenceAdapter implements CardRepository {
 
     private final CardJpaRepository jpaRepository;
 

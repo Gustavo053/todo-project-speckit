@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * CHK027, CHK028) -- each one is a fixed, pre-written sentence plus a stable code.
  */
 @RestControllerAdvice(basePackages = "com.todoproject.adapter.in.rest")
-class RestExceptionHandler {
+public class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<Problem> beanValidationFailed(MethodArgumentNotValidException exception) {

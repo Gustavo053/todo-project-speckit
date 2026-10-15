@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * on every screen (FR-020) always reflects the stored choice without each controller fetching it.
  */
 @ControllerAdvice(basePackages = "com.todoproject.adapter.in.web")
-class AppearanceModelAdvice {
+public class AppearanceModelAdvice {
 
     @ModelAttribute("appearance")
     AppearancePreference appearance(HttpServletRequest request) {

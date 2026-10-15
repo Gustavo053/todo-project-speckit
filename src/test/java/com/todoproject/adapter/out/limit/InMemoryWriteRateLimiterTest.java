@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Covers the window boundary and reset in research R11.
  *
- * <p>Same package as {@link InMemoryWriteRateLimiter} on purpose: the class is package-private
- * because adapters are meant to be reached only through their port, and that visibility should not
- * need widening just to test it.
+ * <p>Same package as {@link InMemoryWriteRateLimiter} by convention, matching how the other
+ * adapter tests are organized.
  */
 class InMemoryWriteRateLimiterTest {
 

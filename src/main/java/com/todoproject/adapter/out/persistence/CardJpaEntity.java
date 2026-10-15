@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "card")
-class CardJpaEntity {
+public class CardJpaEntity {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)

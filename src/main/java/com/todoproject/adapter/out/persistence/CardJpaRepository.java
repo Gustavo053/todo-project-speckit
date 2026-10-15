@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /** Spring Data access to the card table. Package-private: only the adapter beside it may use it. */
-interface CardJpaRepository extends JpaRepository<CardJpaEntity, UUID> {
+public interface CardJpaRepository extends JpaRepository<CardJpaEntity, UUID> {
 
     List<CardJpaEntity> findAllByOrderByUpdatedAtDesc();
 }

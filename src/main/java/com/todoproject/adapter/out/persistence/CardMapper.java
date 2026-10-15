@@ -14,7 +14,7 @@ import com.todoproject.domain.model.TaskCard;
  * read. A row that cannot satisfy the aggregate's invariants is data corruption and surfaces as an
  * exception rather than being repaired.
  */
-final class CardMapper {
+public final class CardMapper {
 
     private CardMapper() {}
 

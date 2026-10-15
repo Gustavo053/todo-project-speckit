@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  * board, so this cannot be used as an open redirect.
  */
 @Controller
-class ThemeController {
+public class ThemeController {
 
     @PostMapping("/theme")
     String setTheme(

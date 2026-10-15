@@ -1,0 +1,67 @@
+server:
+  # Bound to the local machine only. There is one shared board and no login (FR-026a),
+  # so exposing this port would expose every card to anyone who can reach it (FR-026b).
+  address: 127.0.0.1
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: never
+    include-message: never
+
+spring:
+  application:
+    name: todo-project
+
+  datasource:
+    # In-memory: the board is empty after every application restart (research R3).
+    # Run with --spring.profiles.active=durable for a board that survives restarts.
+    url: jdbc:h2:mem:todo;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+  web:
+    locale: pt_BR
+    locale-resolver: fixed
+
+  thymeleaf:
+    cache: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+todo:
+  board:
+    max-cards: 500
+  limits:
+    writes-per-minute: 60
+
+logging:
+  level:
+    com.todoproject: INFO

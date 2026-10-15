@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${mode == 'edit'} ? #{form.edit.title} : #{form.new.title}">Tarefa</title>
+</head>
+<body>
+<section th:fragment="section">
+
+    <h1 th:text="${mode == 'edit'} ? #{form.edit.title} : #{form.new.title}">Nova tarefa</h1>
+
+    <form method="post" th:object="${form}"
+          th:action="${mode == 'edit'} ? @{'/cards/' + ${cardId}} : @{/cards}">
+
+        <!--
+          #fields.hasErrors('*') needs an active th:object scope, so this notice must be a
+          descendant of the <form> above, not a sibling before it (that caused a
+          TemplateProcessingException: "Could not bind form errors using expression '*'").
+        -->
+        <div class="notice notice--error" role="alert" th:if="${#fields.hasErrors('*')}">
+            <p th:text="#{validation.summary}">A tarefa não foi salva.</p>
+        </div>
+
+        <input type="hidden" th:if="${mode == 'edit'}" th:field="*{revision}"/>
+
+        <div class="field">
+            <label for="title" th:text="#{form.field.title}">Título</label>
+            <input id="title" type="text" th:field="*{title}" maxlength="120" required autofocus/>
+            <p class="field__help" th:text="#{form.field.title.help}">Até 120 caracteres.</p>
+            <p class="field__error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Erro</p>
+        </div>
+
+        <div class="field">
+            <label for="note" th:text="#{form.field.note}">Anotação</label>
+            <textarea id="note" th:field="*{note}" maxlength="2000" rows="4"></textarea>
+            <p class="field__help" th:text="#{form.field.note.help}">Opcional, até 2000 caracteres.</p>
+            <p class="field__error" th:if="${#fields.hasErrors('note')}" th:errors="*{note}">Erro</p>
+        </div>
+
+        <div class="field" th:if="${mode != 'edit'}">
+            <label for="stage" th:text="#{form.field.stage}">Coluna</label>
+            <select id="stage" name="stage">
+                <option value="" th:text="#{stage.BACKLOG}">Backlog</option>
+                <option value="IN_PROGRESS" th:text="#{stage.IN_PROGRESS}">Em andamento</option>
+                <option value="PAUSED" th:text="#{stage.PAUSED}">Pausado</option>
+                <option value="DONE" th:text="#{stage.DONE}">Concluído</option>
+            </select>
+        </div>
+
+        <div class="form__actions">
+            <button type="submit" class="button button--primary" th:text="#{form.save}">Salvar</button>
+            <a class="button" th:href="@{/}" th:text="#{form.cancel}">Cancelar</a>
+        </div>
+    </form>
+
+</section>
+</body>
+</html>

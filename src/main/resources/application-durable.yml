@@ -1,0 +1,10 @@
+# Durable profile: the only difference from the default is where H2 keeps its data.
+# No code changes are needed, because persistence sits behind an outbound port (research R3).
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/todo;AUTO_SERVER=TRUE
+  sql:
+    init:
+      # The schema already exists after the first run.
+      mode: embedded
+      continue-on-error: true

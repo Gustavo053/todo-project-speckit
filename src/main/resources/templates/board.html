@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(~{::title}, ~{::section})}">
+<head>
+    <title th:text="#{app.title}">Minhas tarefas</title>
+</head>
+<body>
+<section th:fragment="section">
+
+    <div class="board-toolbar">
+        <h1 th:text="#{app.board.heading}">Quadro</h1>
+        <p class="board-toolbar__total" th:text="#{app.board.total(${board.totalCards()}, ${board.maxCards()})}">0 de 500 tarefas</p>
+        <a class="button button--primary" th:href="@{/cards/new}" th:text="#{form.add}">Nova tarefa</a>
+    </div>
+
+    <div class="notice" role="status" th:if="${noticeKey != null}">
+        <p th:text="#{${noticeKey}}">Aviso</p>
+    </div>
+
+    <div class="board">
+        <details th:each="column : ${board.columns()}" class="column" th:open="${column.openByDefault()}">
+            <summary class="column__header">
+                <span class="column__name" th:text="#{${column.labelKey()}}">Coluna</span>
+                <span class="column__count" th:text="${column.count()}">0</span>
+            </summary>
+
+            <div class="column__body">
+                <p class="column__empty" th:if="${column.isEmpty()}" th:text="#{${column.emptyKey()}}">
+                    Nada aqui.
+                </p>
+                <div class="column__cards" th:unless="${column.isEmpty()}">
+                    <!--
+                      th:each and th:replace cannot share one tag: th:replace resolves before
+                      th:each binds the iteration variable (replace has higher precedence), so
+                      ${card} would still be null when it runs. Splitting across two tags lets
+                      th:each finish binding first, then th:replace runs once per bound copy.
+                    -->
+                    <div th:each="card : ${column.cards()}">
+                        <div th:replace="~{fragments/card :: card(${card})}"></div>
+                    </div>
+                </div>
+            </div>
+        </details>
+    </div>
+
+</section>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR" th:fragment="page(title, content)" th:attr="data-theme=${appearance != null ? appearance.dataThemeAttribute() : null}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:replace="${title}">Minhas tarefas</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<header class="app-header">
+    <a class="app-header__brand" th:href="@{/}" th:text="#{app.title}">Minhas tarefas</a>
+    <form class="theme-form" th:action="@{/theme}" method="post" th:object="${themeForm}"
+          th:with="currentLabel=#{__${'theme.state.' + appearance}__},nextLabel=#{__${'theme.state.' + themeForm.preference}__}">
+        <input type="hidden" th:field="*{redirectTo}"/>
+        <input type="hidden" th:field="*{preference}"/>
+        <button type="submit" class="theme-form__button"
+                th:attr="aria-label=#{theme.action(${currentLabel},${nextLabel})}">
+            <span aria-hidden="true" th:text="${appearance.name() == 'DARK' ? '🌙' : (appearance.name() == 'LIGHT' ? '☀️' : '🖥️')}">🖥️</span>
+            <span th:text="#{theme.label}">Aparência</span>
+        </button>
+    </form>
+</header>
+
+<main id="main" th:replace="${content}">
+    <p>Conteúdo</p>
+</main>
+</body>
+</html>

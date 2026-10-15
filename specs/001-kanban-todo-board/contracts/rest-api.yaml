@@ -1,0 +1,443 @@
+openapi: 3.1.0
+
+info:
+  title: Kanban Todo Board API
+  version: 1.0.0
+  description: |
+    Machine-consumable surface over the same application core that serves the HTML board
+    (research R8). Nothing here is required by the user-facing feature — it exists so the board
+    can be consumed by another client later.
+
+    **No authentication at this stage.** Every operation below is open to anyone who can reach the
+    application, and all of them act on the single shared board (spec FR-025, FR-026a). This is
+    acceptable only while the deployment is local; see spec FR-026b.
+
+    Stage values are stable English codes, deliberately decoupled from the Portuguese labels shown
+    in the UI, so a consumer is unaffected when a label changes (research R8).
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: board
+    description: Read the board as the UI sees it
+  - name: cards
+    description: Create, read, modify and delete cards
+
+paths:
+
+  /api/board:
+    get:
+      tags: [board]
+      operationId: getBoard
+      summary: The whole board, grouped by stage, in display order
+      description: |
+        Returns all four columns in their fixed display order, each with its stage code, its
+        count, and its cards ordered most-recently-changed first. Empty columns are present with
+        an empty card list — a consumer never has to infer the column set (spec FR-001, FR-003).
+      responses:
+        "200":
+          description: The board
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Board" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /api/cards:
+    get:
+      tags: [cards]
+      operationId: listCards
+      summary: All cards, optionally filtered to one stage
+      parameters:
+        - name: stage
+          in: query
+          required: false
+          description: Restrict the result to a single stage
+          schema: { $ref: "#/components/schemas/Stage" }
+      responses:
+        "200":
+          description: Matching cards, most-recently-changed first
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Card" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+    post:
+      tags: [cards]
+      operationId: createCard
+      summary: Create a card
+      description: |
+        Validation runs before anything is stored, and a rejected request stores nothing at all
+        (spec FR-022). `stage` is optional and defaults to `BACKLOG` (spec FR-006).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateCardRequest" }
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              description: Address of the new card
+              schema: { type: string, format: uri-reference }
+            ETag:
+              description: The card's revision, for use in a later If-Match
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Card" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409": { $ref: "#/components/responses/BoardFull" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /api/cards/{cardId}:
+    parameters:
+      - $ref: "#/components/parameters/CardId"
+
+    get:
+      tags: [cards]
+      operationId: getCard
+      summary: One card
+      responses:
+        "200":
+          description: The card
+          headers:
+            ETag:
+              description: The card's current revision
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Card" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+    patch:
+      tags: [cards]
+      operationId: updateCard
+      summary: Change a card's title or note
+      description: |
+        Changes content only — the stage is never altered here (spec FR-015); use
+        `/api/cards/{cardId}/stage`. Omitted fields are left as they are. Sending `note: null`
+        clears the note.
+
+        `If-Match` is required and carries the revision the caller last read. A mismatch means
+        someone changed the card first: nothing is written (research R14).
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateCardRequest" }
+      responses:
+        "200":
+          description: Updated
+          headers:
+            ETag: { schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Card" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "412": { $ref: "#/components/responses/StaleRevision" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+    delete:
+      tags: [cards]
+      operationId: deleteCard
+      summary: Delete a card permanently
+      description: |
+        Removal is permanent — there is no archive, trash, or undo (spec FR-017). A delete of a
+        card that is already gone reports not found and never recreates it (spec FR-012).
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "412": { $ref: "#/components/responses/StaleRevision" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /api/cards/{cardId}/stage:
+    parameters:
+      - $ref: "#/components/parameters/CardId"
+
+    put:
+      tags: [cards]
+      operationId: moveCard
+      summary: Move a card to a stage
+      description: |
+        Every stage reaches every other stage, in both directions — there are no forbidden
+        transitions (spec FR-009). Title, note and creation time are preserved; only the stage and
+        the last-changed time differ (spec FR-010).
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MoveCardRequest" }
+      responses:
+        "200":
+          description: Moved
+          headers:
+            ETag: { schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Card" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "412": { $ref: "#/components/responses/StaleRevision" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+components:
+
+  parameters:
+    CardId:
+      name: cardId
+      in: path
+      required: true
+      description: The card's identifier. A malformed value reports not found, never a server error.
+      schema: { type: string, format: uuid }
+
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: |
+        The revision the caller last read, as returned in `ETag`. Required on every write to an
+        existing card so a stale write is refused rather than silently applied (research R14).
+      schema: { type: string }
+      example: '"3"'
+
+  schemas:
+
+    Stage:
+      type: string
+      description: |
+        One of exactly four fixed stages, listed in display order. Not extensible by clients
+        (spec FR-002). The Portuguese labels shown in the UI are Backlog, Em andamento, Pausado
+        and Concluído respectively.
+      enum: [BACKLOG, IN_PROGRESS, PAUSED, DONE]
+
+    Card:
+      type: object
+      required: [id, title, stage, createdAt, updatedAt, revision]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Normalized and trimmed as stored; never contains control or zero-width characters (research R5).
+        note:
+          type: [string, "null"]
+          maxLength: 2000
+          description: Absent and empty are the same thing — a note that is blank is stored as null.
+        stage:
+          $ref: "#/components/schemas/Stage"
+        createdAt:
+          type: string
+          format: date-time
+          description: Never changes after creation.
+        updatedAt:
+          type: string
+          format: date-time
+        revision:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Increments on every successful write. Use it as `If-Match` on the next write.
+      example:
+        id: "3f1d6a6e-9c4b-4f4a-9a1e-2b7c5d8e0f12"
+        title: "Pagar conta de luz"
+        note: "Vence dia 20. Código de barras está no e-mail."
+        stage: "BACKLOG"
+        createdAt: "2026-10-14T13:05:11.482Z"
+        updatedAt: "2026-10-14T13:05:11.482Z"
+        revision: 0
+
+    Column:
+      type: object
+      required: [stage, count, cards]
+      properties:
+        stage: { $ref: "#/components/schemas/Stage" }
+        count:
+          type: integer
+          minimum: 0
+          description: Number of cards in this column.
+        cards:
+          type: array
+          description: Most-recently-changed first. Empty for an empty column.
+          items: { $ref: "#/components/schemas/Card" }
+
+    Board:
+      type: object
+      required: [columns, totalCards]
+      properties:
+        columns:
+          type: array
+          description: Always all four columns, in display order, including empty ones.
+          minItems: 4
+          maxItems: 4
+          items: { $ref: "#/components/schemas/Column" }
+        totalCards:
+          type: integer
+          minimum: 0
+        maxCards:
+          type: integer
+          description: The board's capacity, so a consumer can show remaining room (research R11).
+
+    CreateCardRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Required. Whitespace-only is rejected (spec FR-007).
+        note:
+          type: [string, "null"]
+          maxLength: 2000
+        stage:
+          $ref: "#/components/schemas/Stage"
+      example:
+        title: "Comprar pão"
+        note: null
+        stage: "BACKLOG"
+
+    UpdateCardRequest:
+      type: object
+      description: At least one property must be present. Omitted properties are left unchanged.
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        note:
+          type: [string, "null"]
+          maxLength: 2000
+          description: Explicit null clears the note.
+      example:
+        title: "Comprar pão e leite"
+
+    MoveCardRequest:
+      type: object
+      required: [stage]
+      properties:
+        stage: { $ref: "#/components/schemas/Stage" }
+      example:
+        stage: "IN_PROGRESS"
+
+    Problem:
+      type: object
+      description: |
+        RFC 9457 problem details. Carries a stable code and a human-readable sentence, and never a
+        stack trace, query text, or storage identifier (spec FR-024).
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: Stable identifier for the problem kind.
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+          description: A sentence safe to show to a person.
+        errors:
+          type: array
+          description: Present on validation failures, one entry per offending field.
+          items:
+            type: object
+            required: [field, code, message]
+            properties:
+              field: { type: string }
+              code:
+                type: string
+                description: e.g. REQUIRED, TOO_LONG, FORBIDDEN_CHARACTER
+              message: { type: string }
+
+  responses:
+
+    BadRequest:
+      description: Validation failed. Nothing was stored.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+          example:
+            type: "https://todo-project.local/problems/validation-failed"
+            title: "Validation failed"
+            status: 400
+            detail: "The card was not saved because some fields are invalid."
+            errors:
+              - field: "title"
+                code: "REQUIRED"
+                message: "Informe um título."
+
+    NotFound:
+      description: No such card. It is never recreated by a write to a missing id.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+          example:
+            type: "https://todo-project.local/problems/card-not-found"
+            title: "Card not found"
+            status: 404
+            detail: "This card no longer exists."
+
+    StaleRevision:
+      description: The supplied If-Match does not match the stored revision. Nothing was written.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+          example:
+            type: "https://todo-project.local/problems/stale-revision"
+            title: "Stale revision"
+            status: 412
+            detail: "This card changed since you last read it. Read it again and retry."
+
+    PreconditionRequired:
+      description: If-Match was absent on a write to an existing card.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+          example:
+            type: "https://todo-project.local/problems/if-match-required"
+            title: "If-Match required"
+            status: 428
+            detail: "Supply the revision you last read in an If-Match header."
+
+    BoardFull:
+      description: The board has reached its card capacity.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+          example:
+            type: "https://todo-project.local/problems/board-full"
+            title: "Board full"
+            status: 409
+            detail: "The board is full. Delete a card to add another."
+
+    RateLimited:
+      description: Too many write actions in the current window.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+          example:
+            type: "https://todo-project.local/problems/rate-limited"
+            title: "Too many requests"
+            status: 429
+            detail: "Too many changes at once. Try again in a moment."

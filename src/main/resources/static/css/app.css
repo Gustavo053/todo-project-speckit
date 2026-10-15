@@ -1,0 +1,484 @@
+/*
+ * Mobile-first throughout: every rule below is written for the smallest viewport first;
+ * responsive overrides use min-width queries only (constitution principle IV).
+ *
+ * Theming follows research R10's three-state model: the light palette lives on bare :root;
+ * the dark palette is defined twice -- once under a prefers-color-scheme media query guarded by
+ * :not([data-theme="light"]), and again under [data-theme="dark"] -- so an explicit choice wins
+ * in both directions and the default "no attribute" case still follows the device.
+ */
+
+:root {
+    --bg: #f6f6f4;
+    --surface: #ffffff;
+    --surface-alt: #f0f0ec;
+    --text: #1a1a18;
+    --text-muted: #46463f;
+    --border: #cfcfc6;
+    --primary: #1d4ed8;
+    --primary-text: #ffffff;
+    --danger: #b91c1c;
+    --danger-text: #ffffff;
+    --focus-ring: #0b5fff;
+    --notice-bg: #fff7cf;
+    --notice-text: #4a3b00;
+    --notice-error-bg: #fde3e1;
+    --notice-error-text: #7a1210;
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+
+    --radius: 0.5rem;
+    --touch-min: 44px;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #121212;
+        --surface: #1e1e1d;
+        --surface-alt: #262625;
+        --text: #f3f3f0;
+        --text-muted: #cac9c3;
+        --border: #3a3a37;
+        --primary: #7da2ff;
+        --primary-text: #0b1530;
+        --danger: #ff8a80;
+        --danger-text: #330705;
+        --focus-ring: #7da2ff;
+        --notice-bg: #3a3300;
+        --notice-text: #ffe9a8;
+        --notice-error-bg: #3a1411;
+        --notice-error-text: #ffd4cf;
+        color-scheme: dark;
+    }
+}
+
+:root[data-theme="dark"] {
+    --bg: #121212;
+    --surface: #1e1e1d;
+    --surface-alt: #262625;
+    --text: #f3f3f0;
+    --text-muted: #cac9c3;
+    --border: #3a3a37;
+    --primary: #7da2ff;
+    --primary-text: #0b1530;
+    --danger: #ff8a80;
+    --danger-text: #330705;
+    --focus-ring: #7da2ff;
+    --notice-bg: #3a3300;
+    --notice-text: #ffe9a8;
+    --notice-error-bg: #3a1411;
+    --notice-error-text: #ffd4cf;
+    color-scheme: dark;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    /* No horizontal page scrolling at any width down to 320px (FR-027). */
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    color: var(--primary);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Visible focus indicator, independent of touch-target sizing (ux CHK017). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}
+
+/* ---------- Layout shell ---------- */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+}
+
+.app-header__brand {
+    font-weight: 700;
+    font-size: 1.125rem;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.theme-form {
+    display: inline-flex;
+}
+
+.theme-form__button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-alt);
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+main {
+    padding: var(--space-4);
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ---------- Buttons ---------- */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.button--primary {
+    background: var(--primary);
+    color: var(--primary-text);
+    border-color: var(--primary);
+}
+
+.button--danger {
+    background: var(--danger);
+    color: var(--danger-text);
+    border-color: var(--danger);
+}
+
+/* ---------- Notices (non-field messages: ux CHK004) ---------- */
+
+.notice {
+    background: var(--notice-bg);
+    color: var(--notice-text);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.notice--error {
+    background: var(--notice-error-bg);
+    color: var(--notice-error-text);
+}
+
+/* ---------- Board toolbar ---------- */
+
+.board-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.board-toolbar h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    flex: 1 1 auto;
+}
+
+.board-toolbar__total {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ---------- Board: stacked collapsible columns below 768px (research R13) ---------- */
+
+.board {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.column {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.column__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    min-height: var(--touch-min);
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+}
+
+.column__header::-webkit-details-marker {
+    display: none;
+}
+
+.column__count {
+    background: var(--surface-alt);
+    border-radius: 999px;
+    padding: 0 var(--space-2);
+    font-size: 0.85rem;
+    min-width: 1.75rem;
+    text-align: center;
+}
+
+.column__body {
+    padding: 0 var(--space-4) var(--space-4);
+}
+
+.column__empty {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/*
+ * A column with many cards scrolls within its own box rather than pushing the next column
+ * off-screen or widening the page (spec Edge Cases: 100+ cards per column).
+ */
+.column__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+    min-width: 0;
+}
+
+.card__title {
+    margin: 0 0 var(--space-2);
+    font-size: 1rem;
+    /* Long unbroken text (e.g. a URL) wraps rather than widening the page (FR-027). */
+    overflow-wrap: anywhere;
+}
+
+.card__note {
+    margin: 0 0 var(--space-1);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.card__note--clamped {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: 2.9em;
+}
+
+.card__note-more {
+    margin: 0 0 var(--space-2);
+    font-size: 0.85rem;
+}
+
+.card__move {
+    margin: var(--space-2) 0;
+}
+
+.card__move-fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.card__move-button {
+    min-height: var(--touch-min);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.card__actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.card__action {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.card__action--danger {
+    color: var(--danger);
+}
+
+/* ---------- Forms ---------- */
+
+.field {
+    margin-bottom: var(--space-4);
+}
+
+.field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.field input[type="text"],
+.field textarea,
+.field select {
+    width: 100%;
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.field textarea {
+    min-height: calc(var(--touch-min) * 2);
+}
+
+.field__help {
+    margin: var(--space-1) 0 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.field__error {
+    margin: var(--space-1) 0 0;
+    color: var(--danger);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.form__actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.delete-confirm__question {
+    font-size: 1.1rem;
+}
+
+.error-page {
+    max-width: 600px;
+    margin: var(--space-6) auto;
+    padding: var(--space-4);
+    text-align: center;
+}
+
+/* ---------- Four-column grid from 768px up (research R13) ---------- */
+
+@media (min-width: 768px) {
+    .board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-3);
+        align-items: start;
+    }
+
+    .column {
+        height: 100%;
+    }
+
+    /*
+     * All four columns are a kanban at this width, not an accordion: every column's content is
+     * forced visible regardless of its native [open] state, and the collapse affordance is
+     * hidden. This overrides the browser's own `details:not([open]) > :not(summary){display:none}`
+     * rule, which is ordinary author CSS and not special-cased against override.
+     */
+    .column:not([open]) .column__body,
+    .column__body {
+        display: block !important;
+    }
+
+    .column__header {
+        cursor: default;
+        pointer-events: none;
+    }
+}

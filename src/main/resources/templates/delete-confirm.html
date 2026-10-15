@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(~{::title}, ~{::section})}">
+<head>
+    <title th:text="#{delete.title}">Excluir tarefa</title>
+</head>
+<body>
+<section th:fragment="section">
+
+    <h1 th:text="#{delete.title}">Excluir tarefa</h1>
+
+    <p class="delete-confirm__question" th:text="#{delete.question(${card.title()})}">
+        Excluir esta tarefa?
+    </p>
+
+    <form method="post" th:action="@{'/cards/' + ${card.id()} + '/delete'}" th:object="${form}">
+        <input type="hidden" th:field="*{revision}"/>
+        <div class="form__actions">
+            <button type="submit" class="button button--danger" th:text="#{delete.confirm}">
+                Excluir definitivamente
+            </button>
+            <a class="button" th:href="@{/}" th:text="#{delete.decline}">Manter a tarefa</a>
+        </div>
+    </form>
+
+</section>
+</body>
+</html>

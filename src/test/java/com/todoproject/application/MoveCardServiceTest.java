@@ -23,8 +23,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 class MoveCardServiceTest {
 
     private final InMemoryCardRepository repository = new InMemoryCardRepository();
-    private final MoveCardService service =
-            new MoveCardService(repository, new TaskCardFixtures.FixedClock(), new WriteGuard(new AlwaysAllowRateLimiter()));
+    private final MoveCardService service = new MoveCardService(
+            repository, new TaskCardFixtures.FixedClock(), new WriteGuard(new AlwaysAllowRateLimiter()));
 
     static Stream<Arguments> allOrderedStagePairsIncludingSelf() {
         return EnumSet.allOf(BoardStage.class).stream()

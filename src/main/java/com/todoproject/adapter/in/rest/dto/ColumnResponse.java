@@ -9,6 +9,8 @@ public record ColumnResponse(BoardStage stage, int count, List<CardResponse> car
 
     public static ColumnResponse of(BoardSnapshot.Column column) {
         return new ColumnResponse(
-                column.stage(), column.count(), column.cards().stream().map(CardResponse::of).toList());
+                column.stage(),
+                column.count(),
+                column.cards().stream().map(CardResponse::of).toList());
     }
 }

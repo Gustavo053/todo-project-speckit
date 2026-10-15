@@ -26,8 +26,13 @@ class CardMapperTest {
                 7L);
 
         CardJpaEntity entity = new CardJpaEntity(
-                card.id().value(), card.title().value(), card.note().orNull(), card.stage(), card.createdAt(),
-                card.updatedAt(), card.revision());
+                card.id().value(),
+                card.title().value(),
+                card.note().orNull(),
+                card.stage(),
+                card.createdAt(),
+                card.updatedAt(),
+                card.revision());
         TaskCard roundTripped = CardMapper.toDomain(entity);
 
         assertThat(roundTripped.id()).isEqualTo(card.id());

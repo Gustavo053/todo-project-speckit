@@ -42,7 +42,8 @@ class CardPersistenceAdapterTest {
 
     @Test
     void ordersMostRecentlyChangedFirst() {
-        TaskCard older = adapter.save(TaskCard.create(CardTitle.of("Antiga"), CardNote.empty(), BoardStage.BACKLOG, T0));
+        TaskCard older =
+                adapter.save(TaskCard.create(CardTitle.of("Antiga"), CardNote.empty(), BoardStage.BACKLOG, T0));
         TaskCard newer = adapter.save(
                 TaskCard.create(CardTitle.of("Nova"), CardNote.empty(), BoardStage.BACKLOG, T0.plusSeconds(60)));
 
@@ -53,7 +54,8 @@ class CardPersistenceAdapterTest {
 
     @Test
     void aConcurrentUpdateRaisesStaleCardException() {
-        TaskCard saved = adapter.save(TaskCard.create(CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, T0));
+        TaskCard saved =
+                adapter.save(TaskCard.create(CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, T0));
 
         // Simulate two readers: both start from revision 0.
         TaskCard readerA = adapter.findById(saved.id()).orElseThrow();
@@ -70,7 +72,8 @@ class CardPersistenceAdapterTest {
 
     @Test
     void deletingATwiceDeletedCardReportsNotFound() {
-        TaskCard saved = adapter.save(TaskCard.create(CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, T0));
+        TaskCard saved =
+                adapter.save(TaskCard.create(CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, T0));
         adapter.delete(saved);
 
         assertThatThrownBy(() -> adapter.delete(saved)).isInstanceOf(CardNotFoundException.class);

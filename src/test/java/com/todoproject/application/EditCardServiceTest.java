@@ -25,8 +25,8 @@ class EditCardServiceTest {
     void changesTheTitle() {
         TaskCard seeded = repository.seed(TaskCardFixtures.aCardIn(BoardStage.BACKLOG));
 
-        TaskCard edited = service.edit(
-                new EditCardCommand(seeded.id(), "Novo título", NoteChange.unchanged(), 0L, "client-1"));
+        TaskCard edited =
+                service.edit(new EditCardCommand(seeded.id(), "Novo título", NoteChange.unchanged(), 0L, "client-1"));
 
         assertThat(edited.title().value()).isEqualTo("Novo título");
     }
@@ -35,8 +35,8 @@ class EditCardServiceTest {
     void changesTheNote() {
         TaskCard seeded = repository.seed(TaskCardFixtures.aCardIn(BoardStage.BACKLOG));
 
-        TaskCard edited = service.edit(
-                new EditCardCommand(seeded.id(), null, NoteChange.to("nota nova"), 0L, "client-1"));
+        TaskCard edited =
+                service.edit(new EditCardCommand(seeded.id(), null, NoteChange.to("nota nova"), 0L, "client-1"));
 
         assertThat(edited.note().orNull()).isEqualTo("nota nova");
         assertThat(edited.title()).isEqualTo(seeded.title());
@@ -55,8 +55,8 @@ class EditCardServiceTest {
     void neverChangesTheStage() {
         TaskCard seeded = repository.seed(TaskCardFixtures.aCardIn(BoardStage.PAUSED));
 
-        TaskCard edited = service.edit(
-                new EditCardCommand(seeded.id(), "Novo título", NoteChange.unchanged(), 0L, "client-1"));
+        TaskCard edited =
+                service.edit(new EditCardCommand(seeded.id(), "Novo título", NoteChange.unchanged(), 0L, "client-1"));
 
         assertThat(edited.stage()).isEqualTo(BoardStage.PAUSED);
     }
@@ -65,8 +65,8 @@ class EditCardServiceTest {
     void rejectsInvalidInputAndLeavesTheStoredCardUntouched() {
         TaskCard seeded = repository.seed(TaskCardFixtures.aCardIn(BoardStage.BACKLOG));
 
-        assertThatThrownBy(() -> service.edit(
-                        new EditCardCommand(seeded.id(), "   ", NoteChange.unchanged(), 0L, "client-1")))
+        assertThatThrownBy(() ->
+                        service.edit(new EditCardCommand(seeded.id(), "   ", NoteChange.unchanged(), 0L, "client-1")))
                 .isInstanceOf(InvalidCardContentException.class);
 
         assertThat(repository.findById(seeded.id()).orElseThrow().title()).isEqualTo(seeded.title());

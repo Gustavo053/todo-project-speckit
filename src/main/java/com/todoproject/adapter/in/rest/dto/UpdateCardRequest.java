@@ -25,7 +25,8 @@ public final class UpdateCardRequest {
     }
 
     public static UpdateCardRequest parse(JsonNode body) {
-        boolean titlePresent = body != null && body.has("title") && !body.get("title").isNull();
+        boolean titlePresent =
+                body != null && body.has("title") && !body.get("title").isNull();
         boolean notePresent = body != null && body.has("note");
 
         if (!titlePresent && !notePresent) {

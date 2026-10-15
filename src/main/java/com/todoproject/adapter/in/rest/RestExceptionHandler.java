@@ -35,8 +35,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(InvalidCardContentException.class)
     ResponseEntity<Problem> domainValidationFailed(InvalidCardContentException exception) {
-        Problem.FieldViolation violation = new Problem.FieldViolation(
-                exception.field(), exception.code().name(), humanMessage(exception));
+        Problem.FieldViolation violation =
+                new Problem.FieldViolation(exception.field(), exception.code().name(), humanMessage(exception));
         return problem(
                 HttpStatus.BAD_REQUEST,
                 Problem.validationFailed(
@@ -88,7 +88,9 @@ public class RestExceptionHandler {
     }
 
     private static ResponseEntity<Problem> problem(HttpStatus status, Problem body) {
-        return ResponseEntity.status(status).contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
+        return ResponseEntity.status(status)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(body);
     }
 
     private static Problem.FieldViolation toViolation(FieldError error) {

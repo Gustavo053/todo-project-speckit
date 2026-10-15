@@ -59,7 +59,10 @@ public class EditCardService implements EditCardUseCase {
         } catch (InvalidCardContentException invalid) {
             // Nothing has been saved, so the stored card is untouched (FR-022).
             writeGuard.logRefused(
-                    ACTION, "invalid_" + invalid.field() + "_" + invalid.code(), command.id().toString(), command.clientKey());
+                    ACTION,
+                    "invalid_" + invalid.field() + "_" + invalid.code(),
+                    command.id().toString(),
+                    command.clientKey());
             throw invalid;
         }
 

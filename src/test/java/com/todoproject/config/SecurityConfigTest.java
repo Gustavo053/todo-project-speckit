@@ -72,21 +72,21 @@ class SecurityConfigTest {
 
     @Test
     void htmlFormPostWithCsrfTokenSucceeds() throws Exception {
-        org.mockito.BDDMockito.given(createCardUseCase.create(org.mockito.ArgumentMatchers.any(CreateCardCommand.class)))
-                .willReturn(TaskCard.create(
-                        CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, Instant.now()));
+        org.mockito.BDDMockito.given(
+                        createCardUseCase.create(org.mockito.ArgumentMatchers.any(CreateCardCommand.class)))
+                .willReturn(
+                        TaskCard.create(CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, Instant.now()));
 
-        mockMvc.perform(post("/cards")
-                        .param("title", "Tarefa")
-                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        mockMvc.perform(post("/cards").param("title", "Tarefa").with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().is3xxRedirection());
     }
 
     @Test
     void apiWriteSucceedsWithoutACsrfToken() throws Exception {
-        org.mockito.BDDMockito.given(createCardUseCase.create(org.mockito.ArgumentMatchers.any(CreateCardCommand.class)))
-                .willReturn(TaskCard.create(
-                        CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, Instant.now()));
+        org.mockito.BDDMockito.given(
+                        createCardUseCase.create(org.mockito.ArgumentMatchers.any(CreateCardCommand.class)))
+                .willReturn(
+                        TaskCard.create(CardTitle.of("Tarefa"), CardNote.empty(), BoardStage.BACKLOG, Instant.now()));
 
         mockMvc.perform(post("/api/cards")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,12 +101,11 @@ class SecurityConfigTest {
 
     @Test
     void everyResponseCarriesAContentSecurityPolicyWithNoInlineScript() throws Exception {
-        mockMvc.perform(get("/"))
-                .andExpect(result -> {
-                    String csp = result.getResponse().getHeader("Content-Security-Policy");
-                    org.assertj.core.api.Assertions.assertThat(csp).isNotNull();
-                    org.assertj.core.api.Assertions.assertThat(csp).contains("default-src 'self'");
-                    org.assertj.core.api.Assertions.assertThat(csp).doesNotContain("unsafe-inline");
-                });
+        mockMvc.perform(get("/")).andExpect(result -> {
+            String csp = result.getResponse().getHeader("Content-Security-Policy");
+            org.assertj.core.api.Assertions.assertThat(csp).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(csp).contains("default-src 'self'");
+            org.assertj.core.api.Assertions.assertThat(csp).doesNotContain("unsafe-inline");
+        });
     }
 }

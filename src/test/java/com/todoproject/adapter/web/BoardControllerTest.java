@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 /** Covers FR-001, FR-003, FR-004: the board always shows all four columns, in order, with counts. */
 @WebMvcTest(com.todoproject.adapter.in.web.BoardController.class)
+@org.springframework.context.annotation.Import(com.todoproject.config.SecurityConfig.class)
 class BoardControllerTest {
 
     @Autowired
@@ -42,7 +43,9 @@ class BoardControllerTest {
         List<Element> columnElements = document.select(".column");
         assertThat(columnElements).hasSize(4);
 
-        List<String> counts = columnElements.stream().map(el -> el.select(".column__count").text()).toList();
+        List<String> counts = columnElements.stream()
+                .map(el -> el.select(".column__count").text())
+                .toList();
         assertThat(counts).containsExactly("0", "0", "0", "0");
 
         assertThat(document.select(".column__empty")).hasSize(4);

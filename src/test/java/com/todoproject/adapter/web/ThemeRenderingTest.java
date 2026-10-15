@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * attribute; the control's accessible name states the current and next state.
  */
 @WebMvcTest(BoardController.class)
+@Import(com.todoproject.config.SecurityConfig.class)
 class ThemeRenderingTest {
 
     @Autowired
@@ -46,8 +48,8 @@ class ThemeRenderingTest {
     void lightPreferenceRendersTheLightAttribute() throws Exception {
         stubEmptyBoard();
 
-        MvcResult result =
-                mockMvc.perform(get("/").cookie(new Cookie("appearance", "LIGHT"))).andReturn();
+        MvcResult result = mockMvc.perform(get("/").cookie(new Cookie("appearance", "LIGHT")))
+                .andReturn();
         Document document = Jsoup.parse(result.getResponse().getContentAsString());
 
         assertThat(document.selectFirst("html").attr("data-theme")).isEqualTo("light");
@@ -57,8 +59,8 @@ class ThemeRenderingTest {
     void darkPreferenceRendersTheDarkAttribute() throws Exception {
         stubEmptyBoard();
 
-        MvcResult result =
-                mockMvc.perform(get("/").cookie(new Cookie("appearance", "DARK"))).andReturn();
+        MvcResult result = mockMvc.perform(get("/").cookie(new Cookie("appearance", "DARK")))
+                .andReturn();
         Document document = Jsoup.parse(result.getResponse().getContentAsString());
 
         assertThat(document.selectFirst("html").attr("data-theme")).isEqualTo("dark");

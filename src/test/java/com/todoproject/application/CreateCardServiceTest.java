@@ -61,8 +61,8 @@ class CreateCardServiceTest {
 
     @Test
     void refusesWhenTheRateLimiterDenies() {
-        CreateCardService service = new CreateCardService(
-                repository, clock, new WriteGuard(new NeverAllowRateLimiter()), 500);
+        CreateCardService service =
+                new CreateCardService(repository, clock, new WriteGuard(new NeverAllowRateLimiter()), 500);
 
         assertThatThrownBy(() -> service.create(new CreateCardCommand("Tarefa", null, null, "client-1")))
                 .isInstanceOf(RateLimitExceededException.class);

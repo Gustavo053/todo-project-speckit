@@ -13,7 +13,6 @@ import com.todoproject.domain.model.CardTitle;
 import com.todoproject.domain.model.TaskCard;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MvcResult;
  * looks safe in the raw HTML string.
  */
 @WebMvcTest(BoardController.class)
+@Import(com.todoproject.config.SecurityConfig.class)
 class EscapingTest {
 
     @Autowired

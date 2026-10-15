@@ -15,21 +15,24 @@ class CardTitleTest {
     void rejectsNullAsRequired() {
         assertThatThrownBy(() -> CardTitle.of(null))
                 .isInstanceOf(InvalidCardContentException.class)
-                .satisfies(ex -> assertThat(((InvalidCardContentException) ex).code()).isEqualTo(ViolationCode.REQUIRED));
+                .satisfies(ex ->
+                        assertThat(((InvalidCardContentException) ex).code()).isEqualTo(ViolationCode.REQUIRED));
     }
 
     @Test
     void rejectsEmptyAsRequired() {
         assertThatThrownBy(() -> CardTitle.of(""))
                 .isInstanceOf(InvalidCardContentException.class)
-                .satisfies(ex -> assertThat(((InvalidCardContentException) ex).code()).isEqualTo(ViolationCode.REQUIRED));
+                .satisfies(ex ->
+                        assertThat(((InvalidCardContentException) ex).code()).isEqualTo(ViolationCode.REQUIRED));
     }
 
     @Test
     void rejectsWhitespaceOnlyAsRequired() {
         assertThatThrownBy(() -> CardTitle.of("    "))
                 .isInstanceOf(InvalidCardContentException.class)
-                .satisfies(ex -> assertThat(((InvalidCardContentException) ex).code()).isEqualTo(ViolationCode.REQUIRED));
+                .satisfies(ex ->
+                        assertThat(((InvalidCardContentException) ex).code()).isEqualTo(ViolationCode.REQUIRED));
     }
 
     @Test

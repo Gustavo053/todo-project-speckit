@@ -13,6 +13,7 @@ import com.todoproject.application.port.in.CreateCardUseCase.CreateCardCommand;
 import com.todoproject.application.port.in.DeleteCardUseCase;
 import com.todoproject.application.port.in.EditCardUseCase;
 import com.todoproject.application.port.in.MoveCardUseCase;
+import com.todoproject.application.port.in.ViewBoardQuery;
 import com.todoproject.application.port.in.ViewCardQuery;
 import com.todoproject.config.SecurityConfig;
 import com.todoproject.domain.error.InvalidCardContentException;
@@ -44,6 +45,9 @@ class CreateCardFlowTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private ViewBoardQuery viewBoardQuery;
+
+    @MockBean
     private ViewCardQuery viewCardQuery;
 
     @MockBean
@@ -60,8 +64,8 @@ class CreateCardFlowTest {
 
     @Test
     void validSubmissionRedirectsToTheNewCard() throws Exception {
-        TaskCard created =
-                TaskCard.create(CardTitle.of("Pagar conta de luz"), CardNote.empty(), BoardStage.BACKLOG, Instant.now());
+        TaskCard created = TaskCard.create(
+                CardTitle.of("Pagar conta de luz"), CardNote.empty(), BoardStage.BACKLOG, Instant.now());
         BDDMockito.given(createCardUseCase.create(any(CreateCardCommand.class))).willReturn(created);
 
         mockMvc.perform(post("/cards").param("title", "Pagar conta de luz").with(csrf()))
@@ -80,14 +84,14 @@ class CreateCardFlowTest {
 
         var document = Jsoup.parse(result.getResponse().getContentAsString());
         assertThat(document.select(".field__error")).isNotEmpty();
-        assertThat(document.select("#note").attr("value") + document.select("#note").text())
+        assertThat(document.select("#note").attr("value")
+                        + document.select("#note").text())
                 .contains("um texto qualquer");
     }
 
     @Test
     void whitespaceOnlyTitleIsRejected() throws Exception {
-        mockMvc.perform(post("/cards").param("title", "   ").with(csrf()))
-                .andExpect(status().isUnprocessableEntity());
+        mockMvc.perform(post("/cards").param("title", "   ").with(csrf())).andExpect(status().isUnprocessableEntity());
     }
 
     @Test

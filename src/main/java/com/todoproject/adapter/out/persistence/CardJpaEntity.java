@@ -53,13 +53,7 @@ public class CardJpaEntity {
     }
 
     CardJpaEntity(
-            UUID id,
-            String title,
-            String note,
-            BoardStage stage,
-            Instant createdAt,
-            Instant updatedAt,
-            Long revision) {
+            UUID id, String title, String note, BoardStage stage, Instant createdAt, Instant updatedAt, Long revision) {
         this.id = id;
         this.title = title;
         this.note = note;

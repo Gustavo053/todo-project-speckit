@@ -33,12 +33,14 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 /** Covers the REST surface against contracts/rest-api.yaml. No CSRF token is ever supplied here --
  * this surface is cookie-less and exempt (research R6). */
 @WebMvcTest({BoardRestController.class, CardRestController.class})
+@Import(com.todoproject.config.SecurityConfig.class)
 class CardCreateReadRestTest {
 
     @Autowired
@@ -79,7 +81,9 @@ class CardCreateReadRestTest {
 
     @Test
     void blankTitleReturns400AsProblemJsonWithFieldError() throws Exception {
-        mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"\"}"))
+        mockMvc.perform(post("/api/cards")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.errors[0].field").value("title"));
@@ -89,7 +93,9 @@ class CardCreateReadRestTest {
     void creationAtTheCapReturns409() throws Exception {
         BDDMockito.given(createCardUseCase.create(any(CreateCardCommand.class))).willThrow(new BoardFullException(500));
 
-        mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"Tarefa\"}"))
+        mockMvc.perform(post("/api/cards")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"Tarefa\"}"))
                 .andExpect(status().isConflict());
     }
 

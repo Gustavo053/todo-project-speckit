@@ -87,8 +87,8 @@ public class CardController {
 
         BoardStage stage = BoardStage.parse(form.getStage()).orElse(null);
         try {
-            TaskCard card = createCardUseCase.create(new CreateCardCommand(
-                    form.getTitle(), blankToNull(form.getNote()), stage, clientKey(request)));
+            TaskCard card = createCardUseCase.create(
+                    new CreateCardCommand(form.getTitle(), blankToNull(form.getNote()), stage, clientKey(request)));
             return "redirect:/#card-" + card.id();
         } catch (InvalidCardContentException invalid) {
             applyDomainViolation(bindingResult, invalid);

@@ -24,8 +24,8 @@ public class ThemeController {
             BindingResult bindingResult,
             HttpServletRequest request,
             HttpServletResponse response) {
-        AppearancePreference preference = AppearancePreference.parseOptional(form.getPreference())
-                .orElse(AppearancePreference.SYSTEM);
+        AppearancePreference preference =
+                AppearancePreference.parseOptional(form.getPreference()).orElse(AppearancePreference.SYSTEM);
         ThemeCookie.write(response, preference);
         return "redirect:" + safeRedirectTarget(form.getRedirectTo());
     }

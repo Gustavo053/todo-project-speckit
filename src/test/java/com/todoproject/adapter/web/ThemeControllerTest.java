@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.todoproject.adapter.in.web.ThemeController;
+import com.todoproject.application.port.in.ViewBoardQuery;
 import com.todoproject.config.SecurityConfig;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -24,18 +25,26 @@ class ThemeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private ViewBoardQuery viewBoardQuery;
+
     @Test
     void acceptsEachOfTheThreeStates() throws Exception {
         for (String state : List.of("SYSTEM", "LIGHT", "DARK")) {
-            mockMvc.perform(post("/theme").param("preference", state).param("redirectTo", "/").with(csrf()))
+            mockMvc.perform(post("/theme")
+                            .param("preference", state)
+                            .param("redirectTo", "/")
+                            .with(csrf()))
                     .andExpect(status().is3xxRedirection());
         }
     }
 
     @Test
     void theCookieIsFunctionalOnlyWithNoIdentifier() throws Exception {
-        MvcResult result = mockMvc.perform(
-                        post("/theme").param("preference", "DARK").param("redirectTo", "/").with(csrf()))
+        MvcResult result = mockMvc.perform(post("/theme")
+                        .param("preference", "DARK")
+                        .param("redirectTo", "/")
+                        .with(csrf()))
                 .andReturn();
 
         String setCookie = result.getResponse().getHeader("Set-Cookie");
@@ -43,7 +52,9 @@ class ThemeControllerTest {
         assertThat(setCookie).contains("appearance=DARK");
         assertThat(setCookie).containsIgnoringCase("HttpOnly");
         assertThat(setCookie).containsIgnoringCase("SameSite=Lax");
-        assertThat(setCookie).containsIgnoringCase("Max-Age=" + java.time.Duration.ofDays(365).toSeconds());
+        assertThat(setCookie)
+                .containsIgnoringCase(
+                        "Max-Age=" + java.time.Duration.ofDays(365).toSeconds());
     }
 
     @Test
@@ -57,7 +68,10 @@ class ThemeControllerTest {
 
     @Test
     void protocolRelativeRedirectAlsoFallsBackToTheBoard() throws Exception {
-        mockMvc.perform(post("/theme").param("preference", "LIGHT").param("redirectTo", "//evil.example/").with(csrf()))
+        mockMvc.perform(post("/theme")
+                        .param("preference", "LIGHT")
+                        .param("redirectTo", "//evil.example/")
+                        .with(csrf()))
                 .andExpect(redirectedUrl("/"));
     }
 }

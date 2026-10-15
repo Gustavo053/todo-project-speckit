@@ -19,9 +19,11 @@ class ViewBoardServiceTest {
     void returnsAllFourColumnsInDeclarationOrderEvenWhenEmpty() {
         BoardSnapshot snapshot = service.load();
 
-        assertThat(snapshot.columns()).extracting(BoardSnapshot.Column::stage)
+        assertThat(snapshot.columns())
+                .extracting(BoardSnapshot.Column::stage)
                 .containsExactly(BoardStage.BACKLOG, BoardStage.IN_PROGRESS, BoardStage.PAUSED, BoardStage.DONE);
-        assertThat(snapshot.columns()).allSatisfy(column -> assertThat(column.isEmpty()).isTrue());
+        assertThat(snapshot.columns())
+                .allSatisfy(column -> assertThat(column.isEmpty()).isTrue());
     }
 
     @Test

@@ -47,7 +47,8 @@ public class CreateCardService implements CreateCardUseCase {
             title = CardTitle.of(command.title());
             note = CardNote.of(command.note());
         } catch (InvalidCardContentException invalid) {
-            writeGuard.logRefused(ACTION, "invalid_" + invalid.field() + "_" + invalid.code(), "none", command.clientKey());
+            writeGuard.logRefused(
+                    ACTION, "invalid_" + invalid.field() + "_" + invalid.code(), "none", command.clientKey());
             throw invalid;
         }
 
